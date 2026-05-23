@@ -345,6 +345,36 @@ body {
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+/* ─── SCAN TREE ──────────────────────────────────────────────── */
+.scan-tree {
+  margin-top: 10px; display: none;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--r); overflow: hidden;
+}
+.scan-tree.show { display: block; }
+.tree-header {
+  padding: 8px 12px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg3);
+}
+.tree-header span { font-size: 11px; font-weight: 600; color: var(--text); font-family: var(--mono); }
+.tree-header small { margin-left: auto; font-size: 10px; color: var(--text3); }
+.tree-body {
+  padding: 10px 12px; font-family: var(--mono); font-size: 11px;
+  color: var(--text2); line-height: 1.8; max-height: 280px; overflow-y: auto;
+  white-space: pre;
+}
+.tree-detected {
+  padding: 10px 12px; border-top: 1px solid var(--border);
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.det-chip {
+  font-size: 10px; padding: 2px 8px; border-radius: 20px;
+  background: var(--accent-soft); color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  font-family: var(--mono);
+}
 </style>
 </head>
 <body>
@@ -419,21 +449,6 @@ body {
         </div>
       </div>
 
-      <!-- AI Combo -->
-      <div class="card">
-        <div class="card-head">
-          <span class="card-icon">🤖</span>
-          <span class="card-title">Your AI combo</span>
-          <span class="card-hint">select in the order you use them</span>
-        </div>
-        <div class="card-body">
-          <div class="ai-grid" id="ai-grid"></div>
-          <div style="font-size:10px;color:var(--text3);margin-top:10px;font-family:var(--mono)">
-            Click to select · Click again to remove · Order matters — it's included in the briefing
-          </div>
-        </div>
-      </div>
-
       <!-- File Scanner -->
       <div class="card">
         <div class="card-head">
@@ -443,11 +458,13 @@ body {
         </div>
         <div class="card-body">
           <div class="drop-zone" id="drop-zone">
-            <input type="file" id="file-drop-input" multiple accept=".json,.ts,.tsx,.js,.jsx,.py,.html,.css,.md,.yaml,.yml,.toml,.go,.rs,.java,.php,.env,.gitignore,package.json,tsconfig.json,Cargo.toml,pyproject.toml">
+            <input type="file" id="file-drop-input" multiple webkitdirectory
+              accept=".json,.ts,.tsx,.js,.jsx,.py,.html,.css,.md,.yaml,.yml,.toml,.go,.rs,.java,.php,.env,.gitignore">
             <div class="drop-icon">📂</div>
-            <div class="drop-title">Drop your project files here</div>
-            <div class="drop-sub">package.json · tsconfig · *.config.* · index files · any source files</div>
+            <div class="drop-title">Drop your project folder or files here</div>
+            <div class="drop-sub">Drag your entire project folder · or pick individual files · Scans structure, stack &amp; patterns</div>
           </div>
+          <div class="scan-tree" id="scan-tree"></div>
           <div class="scan-result" id="scan-result"></div>
           <div class="scan-actions" id="scan-actions" style="display:none">
             <button class="btn btn-primary" id="btn-apply-scan">Apply to project</button>

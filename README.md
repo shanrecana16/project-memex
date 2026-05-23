@@ -1,56 +1,63 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/YOUR_USERNAME/project-memex/main/docs/logo.png" width="72" height="72" alt="Project Memex logo">
+<br>
+
+<svg width="64" height="64" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="32" height="32" rx="8" fill="#5b6af5"/>
+  <path d="M8 10h10M8 16h16M8 22h12" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+  <circle cx="24" cy="10" r="3" fill="#a5b4fc"/>
+  <path d="M22 10l1.5 1.5L25.5 8" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
 
 # Project Memex
 
 **Never re-explain your project to an AI again.**
 
-A browser extension that captures your project's full context — stack, conventions, decisions, and current state — and injects it into any AI chat with one click.
+A Chrome extension that captures your project's full context — stack, conventions, architectural decisions, file structure, and current state — and injects it into any AI chat with one click so you can continue exactly where you left off.
 
-[![Version](https://img.shields.io/badge/version-1.1.0-5b6af5?style=flat-square)](https://github.com/YOUR_USERNAME/project-memex/releases)
+[![Version](https://img.shields.io/badge/version-1.2.0-5b6af5?style=flat-square)](#)
 [![License](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square)](LICENSE)
-[![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-f59e0b?style=flat-square&logo=googlechrome)](https://chrome.google.com/webstore)
+[![Manifest](https://img.shields.io/badge/manifest-v3-f59e0b?style=flat-square)](#)
 
-[**Install**](#installation) · [**Usage**](#usage) · [**How it works**](#how-it-works) · [**Contributing**](#contributing)
+[**Install**](#-installation) · [**How to use**](#-how-to-use) · [**Features**](#-features) · [**How it works**](#-how-it-works) · [**Contributing**](#-contributing)
 
----
+<br>
 
 </div>
 
+---
+
 ## The problem
 
-You're building a project with Claude. You hit the context limit. You open a new chat — or switch to ChatGPT or Gemini — and now you have to re-explain:
+You're building a project with Claude. You hit the context limit. You open a new session — or switch to ChatGPT — and now you have to re-explain everything:
 
 - Your tech stack and exact versions
-- Why you chose REST over GraphQL
+- Why you made certain architectural choices
 - What your folder structure looks like
-- Where you left off
+- Where you actually left off
 
-Every AI makes its own assumptions. Your project becomes inconsistent.
+Every AI starts fresh. Every AI makes its own assumptions. Your project becomes inconsistent.
 
-**Project Memex solves this.** You describe your project once. Every AI session starts from the same ground truth.
-
----
-
-## Supported platforms
-
-| Platform | Status |
-|---|---|
-| 🟠 Claude (claude.ai) | ✅ Supported |
-| 🟢 ChatGPT (chatgpt.com) | ✅ Supported |
-| 🔵 Gemini (gemini.google.com) | ✅ Supported |
-| 🟣 DeepSeek (chat.deepseek.com) | ✅ Supported |
+**Project Memex fixes this.** You describe your project once. Every AI session starts from the same ground truth.
 
 ---
 
-## Installation
+## ✅ Supported platforms
 
-> **No build step required.** This is a plain Chrome extension — just load the folder.
+| AI | URL | Status |
+|---|---|---|
+| Claude | claude.ai | ✅ Supported |
+| ChatGPT | chatgpt.com | ✅ Supported |
+| Gemini | gemini.google.com | ✅ Supported |
+| DeepSeek | chat.deepseek.com | ✅ Supported |
 
-### Step 1 — Download
+---
 
-Clone the repo or download the ZIP:
+## 📦 Installation
+
+> No build step, no npm install. Just load the folder into Chrome.
+
+**Step 1 — Get the files**
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/project-memex.git
@@ -58,193 +65,204 @@ git clone https://github.com/YOUR_USERNAME/project-memex.git
 
 Or click **Code → Download ZIP** and extract it.
 
-### Step 2 — Load in Chrome
+**Step 2 — Load into Chrome**
 
-1. Open Chrome and go to `chrome://extensions/`
-2. Enable **Developer mode** (toggle in the top-right corner)
+1. Open Chrome and go to: `chrome://extensions/`
+2. Enable **Developer mode** — toggle in the top-right corner
 3. Click **Load unpacked**
-4. Select the `extension/` folder inside the downloaded project
+4. Select the `extension/` folder
 
-The Project Memex icon (🧠) will appear in your Chrome toolbar.
+The Project Memex icon appears in your Chrome toolbar.
 
-> Works on Chrome, Brave, Edge, and any Chromium-based browser.
+> ✅ Also works on Brave, Edge, Arc, and any Chromium-based browser.
 
 ---
 
-## Usage
+## 🚀 How to use
 
-### Creating your first project
+### Step 1 — Create a project
 
 1. Click the **Project Memex icon** in your toolbar
 2. Click **Open manager →**
 3. Click **+ New project**
-4. Fill in your project details:
-
-| Section | What to fill in |
-|---|---|
-| **Identity** | Project name, one-line goal, audience |
-| **AI Combo** | Which AIs you use and in what order (e.g. Claude → ChatGPT) |
-| **Tech Stack** | Language, framework, runtime, database, styling, package manager |
-| **Conventions** | File naming, component style, state management, API layer rules |
-| **Decisions** | What you decided + WHY + what you rejected ← *most important* |
-| **File Structure** | Root folder, entry point, key folders and their purpose |
-| **Current State** | Phase, last session summary, done/in-progress/next/blockers |
-
-5. Click **Save**
+4. Give your project a name and a one-line goal
 
 ---
 
-### Scanning an existing project (auto-detect)
+### Step 2 — Scan your project folder *(fastest way)*
 
-Instead of filling everything manually, you can drop your project files and let Memex detect the structure:
+Instead of filling everything manually, drop your project files and let Memex detect the structure automatically.
 
 1. In the manager, find the **Project file scanner** card
-2. Drag and drop files from your project:
-   - `package.json` — detects framework, deps, package manager
-   - `tsconfig.json` — confirms TypeScript
-   - Source files (`.ts`, `.tsx`, `.py`, `.go`, etc.) — detects language and patterns
-   - Config files (`vite.config.ts`, `next.config.js`, etc.) — confirms framework
-3. Click **Apply to project** — detected fields are filled automatically
-4. Review and adjust anything that was missed
+2. **Drag your entire project folder** onto the drop zone — or click to pick files
+3. Memex scans and displays:
+   - A full **file tree** of your project structure
+   - Detected **tech stack** (language, framework, runtime, DB, styling, package manager)
+   - Detected **patterns** (naming conventions, folder usage, test setup)
+   - Notable **dependencies** (zod, zustand, prisma, etc.)
+4. Click **Apply to project** — all detected fields are filled automatically
+5. Review and adjust anything that needs correcting
+
+**What gets detected from a scan:**
+
+| What | How it's detected |
+|---|---|
+| Language | File extensions (`.ts`, `.py`, `.go`, etc.) + `tsconfig.json`, `go.mod` |
+| Framework | Config files (`next.config.js`, `vite.config.ts`) + `package.json` deps |
+| Database/ORM | `package.json` deps (`@prisma/client`, `drizzle-orm`, `mongoose`) |
+| Styling | `tailwind.config.*` file + `package.json` deps |
+| Package manager | Lock files (`pnpm-lock.yaml`, `yarn.lock`, `bun.lockb`) |
+| Folder structure | Full ASCII tree built from all file paths |
+| Patterns | PascalCase components, co-located tests, hook organization |
 
 ---
 
-### Injecting context into an AI
+### Step 3 — Fill in what the scanner missed
 
-1. Go to **claude.ai**, **chatgpt.com**, **gemini.google.com**, or **chat.deepseek.com**
-2. Open a new chat
+After applying the scan, complete the remaining sections:
+
+**Conventions** — how code is written in your project:
+- File naming (kebab-case, PascalCase, etc.)
+- Component style (functional arrow functions, function declarations)
+- State management approach
+- API layer (e.g. "all calls go through `/lib/api.ts`")
+- Any other rules
+
+**Architectural decisions** — the most important section:
+
+> This is where you capture **what** you decided and **why**. This is what stops the next AI from second-guessing or re-litigating settled choices.
+
+For each decision, fill in:
+- The decision: `"Use REST, not GraphQL"`
+- The reason: `"Client is simple, REST is sufficient, no need for GraphQL complexity"`
+- Rejected alternatives: `"GraphQL — overkill for this use case"`
+
+**Current state** — where you are right now:
+- Phase (planning / building / debugging / deploying)
+- Last session summary (1–2 sentences)
+- What's done, what's in progress, what's next, what's blocking you
+
+---
+
+### Step 4 — Inject into an AI
+
+1. Go to any supported AI platform (Claude, ChatGPT, Gemini, DeepSeek)
+2. Open a **new chat**
 3. Click the **Project Memex icon** in your toolbar
-4. Click your project name to set it as active (highlighted in purple)
+4. Click your project to **set it as active** (it highlights in purple)
 5. Click **⚡ Inject briefing into chat**
-6. The briefing appears in the chat input
-7. Add your actual question or task below it and send
+6. The full project briefing appears in the chat input
+7. Add your question or task **below** the briefing and send
 
-The AI now knows your full project context before you type a single word.
+The AI now has your complete project context before it writes a single line of code.
 
 ---
 
-### Updating after each session
+### Step 5 — Update after each session
 
-At the end of every AI session, spend 60 seconds updating your project state:
+At the end of every session, spend **60 seconds** updating your state:
 
 1. Open the manager
-2. Go to **Current state**
-3. Move completed items from "In progress" → "Completed"
-4. Add new items to "Next steps"
-5. Update "Last session summary" with a 1–2 sentence recap
-6. Click **Save**
+2. Move completed tasks from **In progress → Completed**
+3. Add new items to **Next steps**
+4. Write a 1–2 sentence **Last session summary**
+5. Click **Save**
 
-This keeps your briefing accurate for the next session.
-
----
-
-### Exporting and importing
-
-**Export** — saves your project memory as a `.json` file. Use this to:
-- Back up your project memory
-- Share with teammates (they import and have the same context)
-- Version control your project context alongside your code
-
-**Import** — loads a `.json` memory file. Click **↑ Import** and select the file.
+That's it. Next session, inject and continue.
 
 ---
 
-### Your AI combo
+## ✨ Features
 
-The **AI Combo** feature lets you document which AIs you use on a project and in what order. For example:
-
-> Claude → ChatGPT → DeepSeek
-
-This gets included in the briefing so each AI knows its role in your workflow. There's no wrong answer — use whatever combination works for you.
-
-Example combos:
-- **Claude + ChatGPT** — Claude for architecture and reasoning, ChatGPT for code generation
-- **Claude + Gemini** — Claude for complex decisions, Gemini for quick tasks
-- **All four** — rotate based on which performs best for a given task
+| Feature | Description |
+|---|---|
+| **Project file scanner** | Drop your folder or files — auto-detects stack, structure, patterns, deps |
+| **Full file tree** | Builds an ASCII tree of your project and includes it in the briefing |
+| **Dark / light mode** | Developer-friendly dark mode by default, toggle to light anytime |
+| **Export / import** | Save your memory as JSON, share with teammates or version control it |
+| **Multi-platform injection** | One-click inject works on Claude, ChatGPT, Gemini, DeepSeek |
+| **Briefing preview** | See exactly what gets injected before you send it |
 
 ---
 
-## How it works
+## 🔧 How it works
 
 ```
-Your project (once)
+Your project folder
+       │  drag & drop
+       ▼
+  File Scanner
+  ─ reads package.json, config files, source files
+  ─ builds full file tree
+  ─ detects stack, patterns, deps
+       │  one click → apply
+       ▼
+  Project Memory Store
+  ┌─────────────────────────────────────────┐
+  │  Stack · Conventions · Decisions        │
+  │  File Tree · Structure · Current State  │
+  └─────────────────────────────────────────┘
+       │  saved to chrome.storage.local
        │
        ▼
-  Manager app
-  ┌──────────────────────────────────┐
-  │  Stack · Conventions · Decisions │
-  │  Structure · State · AI Combo    │
-  └──────────────────────────────────┘
-       │  stored in chrome.storage.local
-       │
-       ▼
-  Extension popup
-  (select active project)
+  Toolbar popup
+  ─ select active project
+  ─ click ⚡ Inject
        │
        ▼
   Content script
-  (detects which AI platform you're on)
-       │  builds briefing text
-       ▼
-  Injected into chat input
+  ─ detects which AI platform you're on
+  ─ builds briefing text from stored project
+  ─ injects into the chat input
        │
        ▼
-  AI session (Claude / ChatGPT / Gemini / DeepSeek)
-  — starts with full context, no re-explaining
+  AI chat (Claude / ChatGPT / Gemini / DeepSeek)
+  ─ full context before you type a word
 ```
 
-### Why it enforces consistency
-
-The key insight is in the **Architectural Decisions** section. Every field in the briefing removes a decision the AI would otherwise make on its own:
-
-- Stack fields → AI can't invent its own version choices
-- Convention fields → AI can't choose its own naming or component style
-- Decision fields → AI can't re-litigate settled choices (and knows *why* they were made)
-- State fields → AI picks up exactly where the last session ended
-
----
-
-## Project structure
+### File structure
 
 ```
 extension/
-├── manifest.json    Chrome extension config (MV3)
-├── background.js    Service worker — handles all storage
-├── content.js       Runs on AI sites — injects briefing into chat input
-├── popup.html       Toolbar icon UI
-├── popup.js         Popup logic — project switcher, inject trigger
-├── manager.html     Full manager app UI
-└── manager.js       Manager logic — CRUD, file scanner, briefing builder
+├── manifest.json    Chrome extension config (Manifest V3)
+├── background.js    Service worker — handles all chrome.storage operations
+├── content.js       Runs on AI sites — finds input, injects briefing text
+├── popup.html       Toolbar icon UI — project switcher + inject button
+├── popup.js         Popup logic
+├── manager.html     Full manager app — create, edit, scan, preview projects
+└── manager.js       Manager logic — file scanner, CRUD, briefing builder
 ```
 
 ---
 
-## Privacy
+## 🔒 Privacy
 
-- **All data stays on your machine.** Project Memex uses `chrome.storage.local` — your project data never leaves your browser.
-- No analytics, no telemetry, no servers.
-- The extension only runs on `claude.ai`, `chatgpt.com`, `gemini.google.com`, and `chat.deepseek.com`.
-
----
-
-## Contributing
-
-Pull requests are welcome. Key areas for improvement:
-
-- **More platform support** — Perplexity, Copilot, Mistral Le Chat
-- **Auto-capture** — detect context limit warnings and prompt to update state
-- **Git integration** — read `package.json` and folder structure directly from a repo URL
-- **VS Code extension** — update current state from the editor sidebar
-- **Team sync** — shared project memories via a simple backend
+- **All data is local.** Project Memex uses `chrome.storage.local` — nothing leaves your browser.
+- No analytics, no telemetry, no network requests from your data.
+- The extension only activates on the four supported AI platforms.
+- Your code files dropped into the scanner are read in-browser only, never uploaded anywhere.
 
 ---
 
-## License
+## 🤝 Contributing
+
+Pull requests are welcome. Areas to improve:
+
+- **More platforms** — Perplexity, Mistral Le Chat, Copilot, Grok
+- **Smarter scanner** — read `.env.example`, infer API structure from route files
+- **Auto-state capture** — detect context limit warnings, prompt to save current state
+- **Git integration** — load project structure from a GitHub repo URL
+- **VS Code extension** — sidebar to update current state without leaving the editor
+- **Team sync** — share project memories via a simple URL or JSON export
+
+---
+
+## 📄 License
 
 MIT — see [LICENSE](LICENSE)
 
 ---
 
 <div align="center">
-Built to solve a real problem: keeping AI sessions consistent across tools and context limits.
+<sub>Built to solve the real problem of keeping AI sessions consistent across tools and context limits.</sub>
 </div>

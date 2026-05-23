@@ -1,68 +1,246 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-theme="dark">
-<head>
-<meta charset="UTF-8">
-<title>Project Memex</title>
-<style>
-:root { --accent:#5b6af5; --green:#22c55e; --r:6px; }
-[data-theme="dark"]  { --bg:#111118; --bg2:#17171f; --bg3:#1e1e28; --border:#2a2a38; --text:#e8e8f0; --text2:#9090aa; --text3:#55556a; }
-[data-theme="light"] { --bg:#f8f8fc; --bg2:#ffffff; --bg3:#f0f0f8; --border:#dcdcec; --text:#1a1a2e; --text2:#55557a; --text3:#9090aa; }
-*{box-sizing:border-box;margin:0;padding:0;}
-body{width:300px;font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:12px;transition:background 0.2s,color 0.2s;}
-.head{padding:12px 14px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;background:var(--bg2);}
-.logo{width:24px;height:24px;flex-shrink:0;}
-.head-title{font-size:12px;font-weight:700;color:var(--text);}
-.platform-badge{margin-left:auto;font-size:9px;padding:2px 7px;border-radius:20px;background:var(--bg3);border:1px solid var(--border);color:var(--text3);font-family:monospace;}
-.platform-badge.on{color:var(--accent);border-color:var(--accent);background:rgba(91,106,245,0.1);}
-.section{padding:10px 12px;border-bottom:1px solid var(--border);}
-.section-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:6px;font-family:monospace;}
-.proj-item{padding:7px 9px;border-radius:var(--r);cursor:pointer;border:1px solid transparent;margin-bottom:2px;transition:all .12s;display:flex;align-items:center;gap:7px;}
-.proj-item:hover{background:var(--bg3);border-color:var(--border);}
-.proj-item.active{background:rgba(91,106,245,0.1);border-color:var(--accent);}
-.proj-dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0;}
-.proj-item.active .proj-dot{background:var(--accent);}
-.proj-name{flex:1;font-size:12px;color:var(--text);}
-.proj-phase{font-size:9px;color:var(--text3);font-family:monospace;}
-.empty{color:var(--text3);font-size:11px;padding:4px 0;}
-.inject-btn{width:100%;padding:10px;border:none;border-radius:var(--r);background:var(--accent);color:#fff;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .12s;font-family:inherit;}
-.inject-btn:hover{filter:brightness(1.1);}
-.inject-btn:disabled{opacity:.4;cursor:not-allowed;}
-.status{font-size:10px;color:var(--green);margin-top:6px;display:none;font-family:monospace;}
-.status.show{display:block;}
-.foot{padding:10px 12px;display:flex;align-items:center;justify-content:space-between;}
-.open-mgr{color:var(--text3);font-size:10px;cursor:pointer;text-decoration:underline;background:none;border:none;font-family:inherit;}
-.open-mgr:hover{color:var(--text2);}
-.theme-btn{font-size:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:3px 8px;border-radius:20px;cursor:pointer;font-family:inherit;}
-.theme-btn:hover{border-color:var(--accent);color:var(--accent);}
-</style>
-</head>
-<body>
-<div class="head">
-  <svg class="logo" viewBox="0 0 32 32" fill="none">
-    <rect width="32" height="32" rx="8" fill="#5b6af5"/>
-    <path d="M8 10h10M8 16h16M8 22h12" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
-    <circle cx="24" cy="10" r="3" fill="#a5b4fc"/>
-    <path d="M22 10l1.5 1.5L25.5 8" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-  </svg>
-  <span class="head-title">Project Memex</span>
-  <span class="platform-badge" id="platform-badge">—</span>
-</div>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Project Memex</title>
+    <style>
+      :root {
+        --accent: #5b6af5;
+        --green: #22c55e;
+        --r: 6px;
+      }
+      [data-theme="dark"] {
+        --bg: #111118;
+        --bg2: #17171f;
+        --bg3: #1e1e28;
+        --border: #2a2a38;
+        --text: #e8e8f0;
+        --text2: #9090aa;
+        --text3: #55556a;
+      }
+      [data-theme="light"] {
+        --bg: #f8f8fc;
+        --bg2: #ffffff;
+        --bg3: #f0f0f8;
+        --border: #dcdcec;
+        --text: #1a1a2e;
+        --text2: #55557a;
+        --text3: #9090aa;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        width: 300px;
+        font-family: "Inter", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        font-size: 12px;
+        transition:
+          background 0.2s,
+          color 0.2s;
+      }
+      .head {
+        padding: 12px 14px 10px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--bg2);
+      }
+      .logo {
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+      }
+      .head-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .platform-badge {
+        margin-left: auto;
+        font-size: 9px;
+        padding: 2px 7px;
+        border-radius: 20px;
+        background: var(--bg3);
+        border: 1px solid var(--border);
+        color: var(--text3);
+        font-family: monospace;
+      }
+      .platform-badge.on {
+        color: var(--accent);
+        border-color: var(--accent);
+        background: rgba(91, 106, 245, 0.1);
+      }
+      .section {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border);
+      }
+      .section-label {
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text3);
+        margin-bottom: 6px;
+        font-family: monospace;
+      }
+      .proj-item {
+        padding: 7px 9px;
+        border-radius: var(--r);
+        cursor: pointer;
+        border: 1px solid transparent;
+        margin-bottom: 2px;
+        transition: all 0.12s;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .proj-item:hover {
+        background: var(--bg3);
+        border-color: var(--border);
+      }
+      .proj-item.active {
+        background: rgba(91, 106, 245, 0.1);
+        border-color: var(--accent);
+      }
+      .proj-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--border);
+        flex-shrink: 0;
+      }
+      .proj-item.active .proj-dot {
+        background: var(--accent);
+      }
+      .proj-name {
+        flex: 1;
+        font-size: 12px;
+        color: var(--text);
+      }
+      .proj-phase {
+        font-size: 9px;
+        color: var(--text3);
+        font-family: monospace;
+      }
+      .empty {
+        color: var(--text3);
+        font-size: 11px;
+        padding: 4px 0;
+      }
+      .inject-btn {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: var(--r);
+        background: var(--accent);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.12s;
+        font-family: inherit;
+      }
+      .inject-btn:hover {
+        filter: brightness(1.1);
+      }
+      .inject-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .status {
+        font-size: 10px;
+        color: var(--green);
+        margin-top: 6px;
+        display: none;
+        font-family: monospace;
+      }
+      .status.show {
+        display: block;
+      }
+      .foot {
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .open-mgr {
+        color: var(--text3);
+        font-size: 10px;
+        cursor: pointer;
+        text-decoration: underline;
+        background: none;
+        border: none;
+        font-family: inherit;
+      }
+      .open-mgr:hover {
+        color: var(--text2);
+      }
+      .theme-btn {
+        font-size: 10px;
+        background: var(--bg3);
+        border: 1px solid var(--border);
+        color: var(--text2);
+        padding: 3px 8px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .theme-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="head">
+      <svg class="logo" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="8" fill="#5b6af5" />
+        <path
+          d="M8 10h10M8 16h16M8 22h12"
+          stroke="white"
+          stroke-width="2.2"
+          stroke-linecap="round"
+        />
+        <circle cx="24" cy="10" r="3" fill="#a5b4fc" />
+        <path
+          d="M22 10l1.5 1.5L25.5 8"
+          stroke="white"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <span class="head-title">Project Memex</span>
+      <span class="platform-badge" id="platform-badge">—</span>
+    </div>
 
-<div class="section">
-  <div class="section-label">Active project</div>
-  <div id="project-list"><div class="empty">No projects yet</div></div>
-</div>
+    <div class="section">
+      <div class="section-label">Active project</div>
+      <div id="project-list"><div class="empty">No projects yet</div></div>
+    </div>
 
-<div class="section">
-  <button class="inject-btn" id="inject-btn" disabled>⚡ Inject briefing into chat</button>
-  <div class="status" id="status">✓ Briefing injected — type your message below</div>
-</div>
+    <div class="section">
+      <button class="inject-btn" id="inject-btn" disabled>
+        ⚡ Inject briefing into chat
+      </button>
+      <div class="status" id="status">
+        ✓ Briefing injected — type your message below
+      </div>
+    </div>
 
-<div class="foot">
-  <button class="open-mgr" id="open-mgr">Open manager →</button>
-  <button class="theme-btn" id="theme-btn">☀️ Light</button>
-</div>
+    <div class="foot">
+      <button class="open-mgr" id="open-mgr">Open manager →</button>
+      <button class="theme-btn" id="theme-btn">☀️ Light</button>
+    </div>
 
-<script src="popup.js"></script>
-</body>
+    <script src="popup.js"></script>
+  </body>
 </html>
