@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Memex</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ─── THEME TOKENS ─────────────────────────────────────────── */
+:root {
+  --r: 6px;
+  --font: 'Inter', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --accent: #5b6af5;
+  --accent-hover: #717dff;
+  --accent-soft: rgba(91,106,245,0.12);
+  --green: #22c55e;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --trans: all 0.15s ease;
+}
+
+[data-theme="dark"] {
+  --bg:      #111118;
+  --bg2:     #17171f;
+  --bg3:     #1e1e28;
+  --bg4:     #252530;
+  --border:  #2a2a38;
+  --border2: #343444;
+  --text:    #e8e8f0;
+  --text2:   #9090aa;
+  --text3:   #55556a;
+  --shadow:  rgba(0,0,0,0.4);
+}
+
+[data-theme="light"] {
+  --bg:      #f8f8fc;
+  --bg2:     #ffffff;
+  --bg3:     #f0f0f8;
+  --bg4:     #e8e8f4;
+  --border:  #dcdcec;
+  --border2: #c8c8dc;
+  --text:    #1a1a2e;
+  --text2:   #55557a;
+  --text3:   #9090aa;
+  --shadow:  rgba(0,0,0,0.08);
+}
+
+/* ─── RESET ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: var(--font);
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  line-height: 1.5;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* ─── SIDEBAR ────────────────────────────────────────────────── */
+.sidebar {
+  width: 230px;
+  flex-shrink: 0;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+.sidebar-head {
+  padding: 18px 14px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* LOGO */
+.logo-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 2px; }
+.logo-svg {
+  width: 32px; height: 32px; flex-shrink: 0;
+}
+.logo-text { line-height: 1.1; }
+.logo-name {
+  font-size: 13px; font-weight: 700; color: var(--text);
+  letter-spacing: -0.3px;
+}
+.logo-tag {
+  font-size: 9px; color: var(--text3);
+  font-family: var(--mono); letter-spacing: 0.05em;
+}
+
+.proj-list { flex: 1; overflow-y: auto; padding: 8px; }
+.proj-item {
+  padding: 8px 10px; border-radius: var(--r); cursor: pointer;
+  border: 1px solid transparent; margin-bottom: 2px;
+  transition: var(--trans);
+}
+.proj-item:hover { background: var(--bg3); border-color: var(--border); }
+.proj-item.active { background: var(--accent-soft); border-color: var(--accent); }
+.proj-item-name { font-size: 12px; font-weight: 500; color: var(--text); }
+.proj-item-meta { font-size: 10px; color: var(--text3); font-family: var(--mono); margin-top: 2px; }
+.phase-pill {
+  display: inline-block; font-size: 9px; padding: 1px 6px;
+  border-radius: 20px; margin-top: 3px; font-family: var(--mono); font-weight: 500;
+}
+.ph-planning  { background: #dbeafe; color: #1d4ed8; }
+.ph-building  { background: #dcfce7; color: #15803d; }
+.ph-debugging { background: #fef9c3; color: #a16207; }
+.ph-deploying { background: #f3e8ff; color: #7c3aed; }
+[data-theme="dark"] .ph-planning  { background: #1e2a3a; color: #60a5fa; }
+[data-theme="dark"] .ph-building  { background: #162a1e; color: #4ade80; }
+[data-theme="dark"] .ph-debugging { background: #2a2210; color: #fbbf24; }
+[data-theme="dark"] .ph-deploying { background: #211a30; color: #c084fc; }
+
+.sidebar-foot {
+  padding: 10px;
+  border-top: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.btn-new {
+  width: 100%; padding: 8px; border-radius: var(--r);
+  background: var(--accent); color: #fff; border: none;
+  font-family: var(--font); font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: var(--trans);
+}
+.btn-new:hover { background: var(--accent-hover); }
+.theme-toggle {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2px;
+}
+.theme-label { font-size: 10px; color: var(--text3); }
+.toggle-btn {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 8px; border-radius: 20px;
+  background: var(--bg3); border: 1px solid var(--border);
+  cursor: pointer; font-size: 10px; color: var(--text2);
+  font-family: var(--font); transition: var(--trans);
+}
+.toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ─── MAIN ───────────────────────────────────────────────────── */
+.main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+
+.topbar {
+  padding: 14px 28px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+  background: var(--bg2);
+  position: sticky; top: 0; z-index: 10;
+}
+.topbar-title { font-size: 14px; font-weight: 600; flex: 1; }
+.topbar-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* ─── BUTTONS ────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 12px; border-radius: var(--r); border: none;
+  font-family: var(--font); font-size: 11px; font-weight: 500;
+  cursor: pointer; transition: var(--trans); white-space: nowrap;
+}
+.btn-ghost {
+  background: transparent; color: var(--text2);
+  border: 1px solid var(--border2);
+}
+.btn-ghost:hover { background: var(--bg3); color: var(--text); border-color: var(--border2); }
+.btn-danger { background: transparent; color: var(--red); border: 1px solid color-mix(in srgb, var(--red) 25%, transparent); }
+.btn-danger:hover { background: color-mix(in srgb, var(--red) 8%, transparent); }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-hover); }
+
+/* ─── CONTENT ────────────────────────────────────────────────── */
+.content { padding: 24px 28px; max-width: 860px; }
+
+/* ─── CARDS ──────────────────────────────────────────────────── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+.card-head {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg3);
+}
+.card-icon { font-size: 13px; }
+.card-title { font-size: 12px; font-weight: 600; color: var(--text); }
+.card-hint { font-size: 10px; color: var(--text3); margin-left: auto; font-family: var(--mono); }
+.card-body { padding: 16px; }
+
+/* ─── FORM ───────────────────────────────────────────────────── */
+.field { margin-bottom: 12px; }
+.field:last-child { margin-bottom: 0; }
+.label {
+  display: block; font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.07em;
+  color: var(--text3); margin-bottom: 5px; font-family: var(--mono);
+}
+.field input, .field select, .field textarea {
+  width: 100%; padding: 7px 10px;
+  background: var(--bg); border: 1px solid var(--border2);
+  border-radius: var(--r); color: var(--text);
+  font-family: var(--mono); font-size: 12px;
+  transition: border-color 0.12s; outline: none;
+  appearance: none;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+.field textarea { resize: vertical; min-height: 60px; line-height: 1.6; }
+.field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239090aa' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 28px; }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+/* ─── TAGS ───────────────────────────────────────────────────── */
+.tag-wrap { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; min-height: 10px; }
+.tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 20px;
+  background: var(--bg4); border: 1px solid var(--border2);
+  font-size: 11px; color: var(--text2); font-family: var(--mono);
+}
+.tag-x { cursor: pointer; color: var(--text3); font-size: 13px; line-height: 1; }
+.tag-x:hover { color: var(--red); }
+.add-row { display: flex; gap: 6px; margin-top: 6px; }
+.add-row input { flex: 1; }
+.add-btn {
+  padding: 6px 10px; background: var(--bg3);
+  border: 1px solid var(--border2); border-radius: var(--r);
+  color: var(--text2); cursor: pointer; font-size: 11px;
+  font-family: var(--mono); transition: var(--trans); white-space: nowrap;
+}
+.add-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ─── AI COMBO ───────────────────────────────────────────────── */
+.ai-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.ai-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 20px;
+  border: 1.5px solid var(--border2);
+  cursor: pointer; font-size: 11px; font-weight: 500;
+  transition: var(--trans); user-select: none;
+  background: var(--bg3);
+}
+.ai-chip:hover { border-color: var(--border2); filter: brightness(1.1); }
+.ai-chip.selected { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.ai-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.order-badge {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  font-size: 9px; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+
+/* ─── DECISIONS ──────────────────────────────────────────────── */
+.decision {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 12px; margin-bottom: 8px;
+}
+.decision-row { display: flex; gap: 8px; align-items: flex-start; }
+.decision-row input { flex: 1; }
+.decision-sub { display: flex; gap: 8px; margin-top: 8px; }
+.decision-sub textarea { flex: 1; min-height: 44px; }
+.rm-btn {
+  padding: 4px 8px; background: transparent;
+  border: 1px solid color-mix(in srgb, var(--red) 30%, transparent);
+  color: var(--red); border-radius: 4px; cursor: pointer;
+  font-size: 10px; font-family: var(--mono); transition: var(--trans);
+  white-space: nowrap; align-self: flex-start;
+}
+.rm-btn:hover { background: color-mix(in srgb, var(--red) 8%, transparent); }
+.dashed-btn {
+  width: 100%; padding: 8px; border: 1.5px dashed var(--border2);
+  background: transparent; color: var(--text3); border-radius: var(--r);
+  cursor: pointer; font-family: var(--mono); font-size: 11px;
+  transition: var(--trans);
+}
+.dashed-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ─── FILE DROP ZONE ─────────────────────────────────────────── */
+.drop-zone {
+  border: 2px dashed var(--border2); border-radius: 10px;
+  padding: 28px 20px; text-align: center;
+  transition: var(--trans); cursor: pointer; position: relative;
+}
+.drop-zone:hover, .drop-zone.dragover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.drop-icon { font-size: 28px; margin-bottom: 8px; }
+.drop-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.drop-sub { font-size: 11px; color: var(--text3); margin-top: 4px; font-family: var(--mono); }
+.drop-zone input[type=file] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.scan-result {
+  margin-top: 14px; background: var(--bg3);
+  border: 1px solid var(--border); border-radius: var(--r);
+  padding: 12px; font-family: var(--mono); font-size: 11px;
+  color: var(--text2); line-height: 1.7; white-space: pre-wrap;
+  max-height: 260px; overflow-y: auto; display: none;
+}
+.scan-result.show { display: block; }
+.scan-actions { display: flex; gap: 8px; margin-top: 10px; }
+
+/* ─── PREVIEW ────────────────────────────────────────────────── */
+.preview-box {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 16px;
+  font-family: var(--mono); font-size: 11px; line-height: 1.8;
+  color: var(--text2); white-space: pre-wrap;
+  max-height: 380px; overflow-y: auto;
+}
+
+/* ─── WELCOME ────────────────────────────────────────────────── */
+.welcome {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: var(--text3); text-align: center; gap: 12px; padding: 40px;
+}
+.welcome-icon { font-size: 44px; }
+.welcome h3 { font-size: 18px; font-weight: 600; color: var(--text2); }
+.welcome p { font-size: 12px; max-width: 340px; line-height: 1.7; color: var(--text3); }
+
+/* ─── TOAST ──────────────────────────────────────────────────── */
+.toast {
+  position: fixed; bottom: 20px; right: 20px;
+  background: var(--bg2); border: 1px solid var(--green);
+  color: var(--green); padding: 9px 14px; border-radius: 8px;
+  font-size: 11px; font-family: var(--mono);
+  transform: translateY(50px); opacity: 0; transition: all 0.2s;
+  z-index: 999; box-shadow: 0 4px 12px var(--shadow);
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-head">
+    <div class="logo-wrap">
+      <svg class="logo-svg" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="8" fill="#5b6af5"/>
+        <path d="M8 10h10M8 16h16M8 22h12" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+        <circle cx="24" cy="10" r="3" fill="#a5b4fc"/>
+        <path d="M22 10l1.5 1.5L25.5 8" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="logo-text">
+        <div class="logo-name">Project Memex</div>
+        <div class="logo-tag">AI continuity platform</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="proj-list" id="sidebar-list"></div>
+
+  <div class="sidebar-foot">
+    <div class="theme-toggle">
+      <span class="theme-label">Appearance</span>
+      <button class="toggle-btn" id="theme-toggle">
+        <span id="theme-icon">☀️</span>
+        <span id="theme-label-btn">Light</span>
+      </button>
+    </div>
+    <button class="btn-new" id="btn-new">+ New project</button>
+  </div>
+</aside>
+
+<main class="main">
+  <div id="welcome" class="welcome">
+    <div class="welcome-icon">
+      <svg width="48" height="48" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="8" fill="#5b6af5" opacity="0.15"/>
+        <path d="M8 10h10M8 16h16M8 22h12" stroke="#5b6af5" stroke-width="2.2" stroke-linecap="round"/>
+        <circle cx="24" cy="10" r="3" fill="#5b6af5" opacity="0.5"/>
+      </svg>
+    </div>
+    <h3>No project selected</h3>
+    <p>Create a project to start capturing context. Inject the briefing into any AI to continue right where you left off.</p>
+    <button class="btn btn-primary" id="btn-welcome-new">Create first project</button>
+  </div>
+
+  <div id="editor" style="display:none">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">Project</div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" id="btn-preview">👁 Preview</button>
+        <button class="btn btn-ghost" id="btn-export">↓ Export</button>
+        <button class="btn btn-ghost" id="btn-import-json">↑ Import</button>
+        <button class="btn btn-danger" id="btn-delete">Delete</button>
+        <button class="btn btn-primary" id="btn-save">Save</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- Identity -->
+      <div class="card">
+        <div class="card-head"><span class="card-icon">📋</span><span class="card-title">Project identity</span></div>
+        <div class="card-body">
+          <div class="grid2">
+            <div class="field"><label class="label">Project name</label><input id="f-name" type="text" placeholder="My SaaS App"></div>
+            <div class="field"><label class="label">One-line goal</label><input id="f-goal" type="text" placeholder="A task manager for remote teams"></div>
+          </div>
+          <div class="field"><label class="label">Target audience</label><input id="f-audience" type="text" placeholder="Small business owners, freelancers"></div>
+        </div>
+      </div>
+
+      <!-- AI Combo -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-icon">🤖</span>
+          <span class="card-title">Your AI combo</span>
+          <span class="card-hint">select in the order you use them</span>
+        </div>
+        <div class="card-body">
+          <div class="ai-grid" id="ai-grid"></div>
+          <div style="font-size:10px;color:var(--text3);margin-top:10px;font-family:var(--mono)">
+            Click to select · Click again to remove · Order matters — it's included in the briefing
+          </div>
+        </div>
+      </div>
+
+      <!-- File Scanner -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-icon">🔍</span>
+          <span class="card-title">Project file scanner</span>
+          <span class="card-hint">drop files to detect structure</span>
+        </div>
+        <div class="card-body">
+          <div class="drop-zone" id="drop-zone">
+            <input type="file" id="file-drop-input" multiple accept=".json,.ts,.tsx,.js,.jsx,.py,.html,.css,.md,.yaml,.yml,.toml,.go,.rs,.java,.php,.env,.gitignore,package.json,tsconfig.json,Cargo.toml,pyproject.toml">
+            <div class="drop-icon">📂</div>
+            <div class="drop-title">Drop your project files here</div>
+            <div class="drop-sub">package.json · tsconfig · *.config.* · index files · any source files</div>
+          </div>
+          <div class="scan-result" id="scan-result"></div>
+          <div class="scan-actions" id="scan-actions" style="display:none">
+            <button class="btn btn-primary" id="btn-apply-scan">Apply to project</button>
+            <button class="btn btn-ghost" id="btn-clear-scan">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tech Stack -->
+      <div class="card">
+        <div class="card-head"><span class="card-icon">⚙️</span><span class="card-title">Tech stack</span><span class="card-hint">no guessing allowed</span></div>
+        <div class="card-body">
+          <div class="grid3">
+            <div class="field"><label class="label">Language</label><input id="f-language" type="text" placeholder="TypeScript"></div>
+            <div class="field"><label class="label">Framework</label><input id="f-framework" type="text" placeholder="Next.js 14"></div>
+            <div class="field"><label class="label">Runtime</label><input id="f-runtime" type="text" placeholder="Node.js 20"></div>
+            <div class="field"><label class="label">Database</label><input id="f-database" type="text" placeholder="PostgreSQL + Prisma"></div>
+            <div class="field"><label class="label">Styling</label><input id="f-styling" type="text" placeholder="Tailwind CSS"></div>
+            <div class="field"><label class="label">Package manager</label><input id="f-pm" type="text" placeholder="pnpm"></div>
+          </div>
+          <div class="field">
+            <label class="label">Other dependencies</label>
+            <div class="tag-wrap" id="deps-tags"></div>
+            <div class="add-row"><input id="dep-input" type="text" placeholder="e.g. zod, react-query, stripe"><button class="add-btn" id="dep-add">+ Add</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Conventions -->
+      <div class="card">
+        <div class="card-head"><span class="card-icon">📏</span><span class="card-title">Coding conventions</span><span class="card-hint">keeps AI output consistent</span></div>
+        <div class="card-body">
+          <div class="grid2">
+            <div class="field"><label class="label">File naming</label>
+              <select id="f-file-naming">
+                <option value="">Select...</option>
+                <option value="kebab-case">kebab-case</option>
+                <option value="camelCase">camelCase</option>
+                <option value="PascalCase">PascalCase</option>
+                <option value="snake_case">snake_case</option>
+              </select>
+            </div>
+            <div class="field"><label class="label">Component style</label>
+              <select id="f-component-style">
+                <option value="">Select...</option>
+                <option value="functional (arrow functions)">Functional — arrow functions</option>
+                <option value="functional (function declarations)">Functional — function declarations</option>
+                <option value="class components">Class components</option>
+              </select>
+            </div>
+            <div class="field"><label class="label">State management</label><input id="f-state" type="text" placeholder="Zustand, Redux, useState only..."></div>
+            <div class="field"><label class="label">API layer</label><input id="f-api-layer" type="text" placeholder="All calls through /lib/api.ts"></div>
+          </div>
+          <div class="field">
+            <label class="label">Additional rules</label>
+            <div class="tag-wrap" id="rules-tags"></div>
+            <div class="add-row"><input id="rule-input" type="text" placeholder="e.g. No inline styles, always use named exports"><button class="add-btn" id="rule-add">+ Add</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Structure -->
+      <div class="card">
+        <div class="card-head"><span class="card-icon">🗂</span><span class="card-title">File structure</span></div>
+        <div class="card-body">
+          <div class="grid2">
+            <div class="field"><label class="label">Root folder</label><input id="f-root" type="text" placeholder="/my-project"></div>
+            <div class="field"><label class="label">Entry point</label><input id="f-entry" type="text" placeholder="src/app/page.tsx"></div>
+          </div>
+          <div class="field"><label class="label">Key folders</label>
+            <div id="folders-list"></div>
+            <button class="dashed-btn" id="folder-add">+ Add folder</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Decisions -->
+      <div class="card">
+        <div class="card-head"><span class="card-icon">🧩</span><span class="card-title">Architectural decisions</span><span class="card-hint">the most critical context</span></div>
+        <div class="card-body">
+          <div id="decisions-list"></div>
+          <button class="dashed-btn" id="decision-add">+ Add decision</button>
+        </div>
+      </div>
+
+      <!-- State -->
+      <div class="card">
+        <div class="card-head"><span class="card-icon">📍</span><span class="card-title">Current state</span><span class="card-hint">update every session</span></div>
+        <div class="card-body">
+          <div class="grid2">
+            <div class="field"><label class="label">Phase</label>
+              <select id="f-phase">
+                <option value="planning">Planning</option>
+                <option value="scaffolding">Scaffolding</option>
+                <option value="building">Building</option>
+                <option value="debugging">Debugging</option>
+                <option value="deploying">Deploying</option>
+              </select>
+            </div>
+          </div>
+          <div class="field"><label class="label">Last session summary</label><textarea id="f-summary" placeholder="What happened last session, where you stopped, what was working..."></textarea></div>
+          <div class="grid2">
+            <div class="field"><label class="label">Completed ✅</label>
+              <div class="tag-wrap" id="completed-tags"></div>
+              <div class="add-row"><input id="completed-input" type="text" placeholder="Auth flow"><button class="add-btn" id="completed-add">+ Add</button></div>
+            </div>
+            <div class="field"><label class="label">In progress 🔄</label>
+              <div class="tag-wrap" id="inprogress-tags"></div>
+              <div class="add-row"><input id="inprogress-input" type="text" placeholder="Dashboard"><button class="add-btn" id="inprogress-add">+ Add</button></div>
+            </div>
+          </div>
+          <div class="field"><label class="label">Next steps 📌</label>
+            <div class="tag-wrap" id="nextsteps-tags"></div>
+            <div class="add-row"><input id="nextsteps-input" type="text" placeholder="Add settings page"><button class="add-btn" id="nextsteps-add">+ Add</button></div>
+          </div>
+          <div class="field"><label class="label">Blockers 🚧</label>
+            <div class="tag-wrap" id="blockers-tags"></div>
+            <div class="add-row"><input id="blockers-input" type="text" placeholder="Stripe webhook not firing"><button class="add-btn" id="blockers-add">+ Add</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Constraints -->
+      <div class="card">
+        <div class="card-head"><span class="card-icon">⚠️</span><span class="card-title">Constraints & known issues</span></div>
+        <div class="card-body">
+          <div class="grid2">
+            <div class="field"><label class="label">Constraints</label>
+              <div class="tag-wrap" id="constraints-tags"></div>
+              <div class="add-row"><input id="constraints-input" type="text" placeholder="Must run on Vercel free tier"><button class="add-btn" id="constraints-add">+ Add</button></div>
+            </div>
+            <div class="field"><label class="label">Known issues</label>
+              <div class="tag-wrap" id="issues-tags"></div>
+              <div class="add-row"><input id="issues-input" type="text" placeholder="Mobile breaks below 320px"><button class="add-btn" id="issues-add">+ Add</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview -->
+      <div class="card" id="preview-card" style="display:none">
+        <div class="card-head"><span class="card-icon">👁</span><span class="card-title">Briefing preview</span><span class="card-hint">what gets injected into the AI</span></div>
+        <div class="card-body"><div class="preview-box" id="preview-text"></div></div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /editor -->
+</main>
+
+<div class="toast" id="toast"></div>
+<input type="file" id="import-input" accept=".json" style="display:none">
+
+<script src="manager.js"></script>
+</body>
+</html>
